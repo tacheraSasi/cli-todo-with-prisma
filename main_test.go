@@ -1,7 +1,7 @@
 package main_test
 
 import (
-	"demo"
+	"cli-todo"
 	"testing"
 )
 
