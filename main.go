@@ -20,15 +20,21 @@ func main() {
 	client := db.NewClient()
 	defer PrismaDisconnect(client)
 	
-	if err := Run(client); err != nil {
-		panic(err)
-	}
+	// if err := Run(client); err != nil {
+	// 	panic(err)
+	// }
 
 	//adding a todo
-	err := AddTodo(client,"Create all the other CRUD functions")
+	_,err := AddTodo(client,"Create all the other CRUD functions")
 	if err != nil{
 	    return
 	}
+
+	todos := GetAll(client)
+	for i,todo := range todos {
+		fmt.Println(i,". ",todo.Title)
+	}
+	// fmt.Println("Todo was added",addedTodo.InnerTodo)
 
 }
 
@@ -66,6 +72,7 @@ func Run(client *db.PrismaClient) error {
 	post, err := client.Post.FindUnique(
 		db.Post.ID.Equals(createdPost.ID),
 	).Exec(ctx)
+	// fmt.Println(post)
 	
 	if err != nil {
 		return err

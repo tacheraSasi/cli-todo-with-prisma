@@ -5,27 +5,41 @@ import (
 	"context"
 	"fmt"
 	"log"
+
 )
 
-func AddTodo(client *db.PrismaClient,title string)error{
+type Todo *db.InnerTodo //NOTICE:Will fix this Later
+
+func AddTodo(client *db.PrismaClient,title string)(*db.TodoModel,error){
 	PrismaConnect(client)
 	ctx := context.Background()
 
 	addedTodo,err := client.Todo.CreateOne(db.Todo.Title.Set(title)).Exec(ctx)
 	if err != nil{
 		log.Fatal("Failed to create the todo",err);
-		return err
+		return nil,err
 	}
 
 	fmt.Println("Todo was created")
-	fmt.Println(addedTodo)
-	return nil
+	// fmt.Println(addedTodo.InnerTodo)
+	return addedTodo,nil 
+}
+func GetAll(client *db.PrismaClient)[]db.TodoModel{
+	PrismaConnect(client)
+	ctx := context.Background()
+
+	//getting all todos from the db
+	todos,err := client.Todo.FindMany().Exec(ctx)
+	if err != nil{
+		log.Fatal("Failed to fetch todos:",err)
+		return nil
+	}
+	return todos
 }
 
-func updateTodo(){}
+func UpdateTodo(){}
 
-func deleteTodo(){}
+func DeleteTodo(){}
 
-func getTodo(){}
+func GetTodo(){}
 
-func getAll(){}
