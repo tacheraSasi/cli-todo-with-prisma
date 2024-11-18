@@ -21,3 +21,11 @@ func AddTodo(client *db.PrismaClient,title string)error{
 	fmt.Println(addedTodo)
 	return nil
 }
+
+func updateTodo(){}
+
+func deleteTodo(){}
+
+func getTodo(){}
+
+func getAll(){}
