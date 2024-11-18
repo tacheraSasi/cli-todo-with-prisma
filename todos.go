@@ -8,6 +8,8 @@ import (
 )
 
 func AddTodo(client *db.PrismaClient,title string)error{
+	PrismaConnect(client)
+	defer PrismaDisconnect(client)
 	ctx := context.Background()
 
 	addedTodo,err := client.Todo.CreateOne(db.Todo.Title.Set(title)).Exec(ctx)
@@ -18,4 +20,5 @@ func AddTodo(client *db.PrismaClient,title string)error{
 
 	fmt.Println("Todo was created")
 	fmt.Println(addedTodo)
+	return nil
 }

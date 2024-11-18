@@ -18,27 +18,34 @@ import (
 
 func main() {
 	client := db.NewClient()
+	defer PrismaDisconnect(client)
 	
 	if err := Run(client); err != nil {
 		panic(err)
 	}
 
-	if err := client.Prisma.Connect(); err != nil {
-		panic(err)
+	//adding a todo
+	err := AddTodo(client,"Create all the other CRUD functions")
+	if err != nil{
+	    return
 	}
-
-	defer func() {
-		if err := client.Prisma.Disconnect(); err != nil {
-			panic(err)
-		}
-	}()
-
 
 }
 
+func PrismaConnect(client *db.PrismaClient){
+	if err := client.Prisma.Connect(); err != nil{
+		panic(err)
+	}
+}
 
+func PrismaDisconnect(client *db.PrismaClient){
+	if err := client.Prisma.Disconnect();err!=nil{ 
+		panic(err)
+	}
+}
 
 func Run(client *db.PrismaClient) error {
+	PrismaConnect(client)
 	ctx := context.Background()
 
 	// create a post
@@ -67,10 +74,6 @@ func Run(client *db.PrismaClient) error {
 	result, _ = json.MarshalIndent(post, "", "  ")
 	fmt.Printf("post: %s\n", result)
 
-	// for optional/nullable values, you need to check the function and create two return values
-	// `desc` is a string, and `ok` is a bool whether the record is null or not. If it's null,
-	// `ok` is false, and `desc` will default to Go's default values; in this case an empty string (""). Otherwise,
-	// `ok` is true and `desc` will be "my description".
 	desc, ok := post.Desc()
 	if !ok {
 		return fmt.Errorf("post's description is null")
