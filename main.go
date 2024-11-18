@@ -4,7 +4,7 @@ package main
 
 import (
 	"context"
-	"demo/db"
+	"cli-todo/db"
 	"encoding/json"
 	"fmt"
 	// "github.com/tacheraSasi/prisma-go-demo.git/db"

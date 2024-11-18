@@ -1,4 +1,4 @@
-module demo
+module cli-todo
 
 go 1.21
 
