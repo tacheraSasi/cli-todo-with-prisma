@@ -13,7 +13,7 @@ model Todo{
   title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  completed Boolean
+  completed Boolean  @default(false)
 }
 
 model Post {

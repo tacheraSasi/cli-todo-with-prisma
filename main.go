@@ -9,17 +9,22 @@ import (
 	"fmt"
 	// "github.com/tacheraSasi/prisma-go-demo.git/db"
 )
+//AddTodo
+//getAllTodos
+//getOneTodo
+//updateTodo
+//deleteTodo
+
 
 func main() {
-	if err := Run(); err != nil {
+	client := db.NewClient()
+	
+	if err := Run(client); err != nil {
 		panic(err)
 	}
-}
 
-func Run() error {
-	client := db.NewClient()
 	if err := client.Prisma.Connect(); err != nil {
-		return err
+		panic(err)
 	}
 
 	defer func() {
@@ -28,6 +33,12 @@ func Run() error {
 		}
 	}()
 
+
+}
+
+
+
+func Run(client *db.PrismaClient) error {
 	ctx := context.Background()
 
 	// create a post
