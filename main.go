@@ -39,6 +39,8 @@ func main() {
 		if err != nil{
 			return
 		}
+	default:
+		fmt.Println("Invalid options\n--	all (for getting all todos)\n--		add <Todo-title> (for adding a todo)")
 		
 	}
 	
