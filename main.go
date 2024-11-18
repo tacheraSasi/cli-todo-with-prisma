@@ -3,12 +3,15 @@
 package main
 
 import (
-	"context"
 	"cli-todo/db"
+	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	// "github.com/tacheraSasi/prisma-go-demo.git/db"
 )
+
 //AddTodo
 //getAllTodos
 //getOneTodo
@@ -19,21 +22,33 @@ import (
 func main() {
 	client := db.NewClient()
 	defer PrismaDisconnect(client)
+
+	switch os.Args[1] {
+	case "all":
+		todos := GetAll(client)
+		for i,todo := range todos {
+			fmt.Println(i+1,". ",todo.Title)
+		}
+	case "add":
+		if os.Args[2] == "" {
+			fmt.Println("Missing the todo title arg")
+			return
+		}
+		//adding a todo
+		_,err := AddTodo(client,os.Args[2])
+		if err != nil{
+			return
+		}
+		
+	}
 	
 	// if err := Run(client); err != nil {
 	// 	panic(err)
 	// }
 
-	//adding a todo
-	_,err := AddTodo(client,"Create all the other CRUD functions")
-	if err != nil{
-	    return
-	}
+	
 
-	todos := GetAll(client)
-	for i,todo := range todos {
-		fmt.Println(i,". ",todo.Title)
-	}
+	
 	// fmt.Println("Todo was added",addedTodo.InnerTodo)
 
 }
