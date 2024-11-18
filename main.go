@@ -30,7 +30,7 @@ func main() {
 			fmt.Println(i+1,". ",todo.Title)
 		}
 	case "add":
-		if os.Args[2] == "" {
+		if len(os.Args) < 3 {
 			fmt.Println("Missing the todo title arg")
 			return
 		}
@@ -48,9 +48,6 @@ func main() {
 	// 	panic(err)
 	// }
 
-	
-
-	
 	// fmt.Println("Todo was added",addedTodo.InnerTodo)
 
 }
