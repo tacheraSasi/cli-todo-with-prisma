@@ -44,6 +44,20 @@ func main() {
 		if err != nil{
 			return
 		}
+	case "get-todo":
+		if len(os.Args) < 3 {
+			fmt.Println("Missing the todo ID arg")
+			return
+		}
+
+		id := os.Args[2]
+		todo :=GetTodo(client,id)
+		if todo == nil{
+			fmt.Println("Todo not found")
+			return
+		}
+		fmt.Println(todo)
+
 	default:
 		fmt.Println("Invalid options\n--	all (for getting all todos)\n--		add <Todo-title> (for adding a todo)")
 		
