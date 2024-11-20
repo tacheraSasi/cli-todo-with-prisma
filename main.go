@@ -9,123 +9,140 @@ import (
 	"fmt"
 	"log"
 	"os"
-	// "github.com/tacheraSasi/prisma-go-demo.git/db"
 )
-
-//AddTodo
-//getAllTodos
-//getOneTodo
-//updateTodo
-//deleteTodo
 
 var IsPrismaConnected bool = false
 
-
 func main() {
 	client := db.NewClient()
-
 	defer PrismaDisconnect(client)
 
-	switch os.Args[1] {
+	if len(os.Args) < 2 {
+		fmt.Println("Missing command. Use one of the following:")
+		printUsage()
+		return
+	}
+
+	command := os.Args[1]
+	switch command {
 	case "all":
-		todos := GetAll(client)
+		todos, err := GetAll(client)
+		if err != nil {
+			log.Printf("Error fetching todos: %v\n", err)
+			return
+		}
+
 		fmt.Println("ID   Title")
 		fmt.Println("-----------")
-		for _,todo := range todos {
-			fmt.Println(todo.ID,". ",todo.Title)
+		for _, todo := range todos {
+			fmt.Printf("%d   %s\n", todo.ID, todo.Title)
 		}
 	case "add":
 		if len(os.Args) < 3 {
-			fmt.Println("Missing the todo title arg")
+			fmt.Println("Missing the todo title argument")
 			return
 		}
-		//adding a todo
-		_,err := AddTodo(client,os.Args[2])
-		if err != nil{
+
+		title := os.Args[2]
+		_, err := AddTodo(client, title)
+		if err != nil {
+			log.Printf("Error adding todo: %v\n", err)
 			return
 		}
+		fmt.Println("Todo added successfully!")
 	case "get-todo":
 		if len(os.Args) < 3 {
-			fmt.Println("Missing the todo ID arg")
+			fmt.Println("Missing the todo ID argument")
 			return
 		}
 
 		id := os.Args[2]
-		todo :=GetTodo(client,id)
-		if todo == nil{
+		todo, err := GetTodo(client, id)
+		if err != nil {
+			log.Printf("Error fetching todo: %v\n", err)
+			return
+		}
+		if todo == nil {
 			fmt.Println("Todo not found")
 			return
 		}
-		fmt.Println("Todo Found")
-		fmt.Println(todo.ID,todo.Title)
 
+		fmt.Println("Todo Found:")
+		fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
 	default:
-		fmt.Println("Invalid options\n--	all (for getting all todos)\n--		add <Todo-title> (for adding a todo)")
-		
-	}
-	
-	// if err := Run(client); err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Println("Todo was added",addedTodo.InnerTodo)
-
-}
-
-func PrismaConnect(client *db.PrismaClient){
-	if err := client.Prisma.Connect(); err != nil{
-		IsPrismaConnected = true
-		panic(err)
+		fmt.Println("Invalid command.")
+		printUsage()
 	}
 }
 
-func PrismaDisconnect(client *db.PrismaClient){
-	if !IsPrismaConnected { // making Sure that prisma is connected
-		log.Fatal("Prisma is not connected. Location:main.go/PrismaDisconnect")
+func printUsage() {
+	fmt.Println("Usage:")
+	fmt.Println("  all           Get all todos")
+	fmt.Println("  add <title>   Add a new todo")
+	fmt.Println("  get-todo <id> Get a specific todo by ID")
+}
+
+// PrismaConnect establishes a connection to the Prisma client
+func PrismaConnect(client *db.PrismaClient) {
+	if IsPrismaConnected {
+		return // Avoid reconnecting if already connected
+	}
+
+	if err := client.Prisma.Connect(); err != nil {
+		panic(fmt.Errorf("failed to connect to Prisma: %w", err))
+	}
+
+	IsPrismaConnected = true
+}
+
+// PrismaDisconnect disconnects the Prisma client
+func PrismaDisconnect(client *db.PrismaClient) {
+	if !IsPrismaConnected {
+		log.Println("Prisma is not connected. Skipping disconnect.")
 		return
 	}
-	if err := client.Prisma.Disconnect();err!=nil{ 
-		panic(err)
+
+	if err := client.Prisma.Disconnect(); err != nil {
+		panic(fmt.Errorf("failed to disconnect from Prisma: %w", err))
 	}
+
+	IsPrismaConnected = false
 }
 
+// Run demonstrates CRUD operations (example function)
 func Run(client *db.PrismaClient) error {
 	PrismaConnect(client)
 	ctx := context.Background()
 
-	// create a post
+	// Create a post
 	createdPost, err := client.Post.CreateOne(
 		db.Post.Title.Set("Hi from Prisma!"),
 		db.Post.Published.Set(true),
 		db.Post.Desc.Set("Prisma is a database toolkit and makes databases easy."),
 	).Exec(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating post: %w", err)
 	}
 
 	result, _ := json.MarshalIndent(createdPost, "", "  ")
-	fmt.Printf("created post: %s\n", result)
+	fmt.Printf("Created post: %s\n", result)
 
-	// find a single post
-
+	// Find a single post
 	post, err := client.Post.FindUnique(
 		db.Post.ID.Equals(createdPost.ID),
 	).Exec(ctx)
-	// fmt.Println(post)
-	
 	if err != nil {
-		return err
+		return fmt.Errorf("error finding post: %w", err)
 	}
 
 	result, _ = json.MarshalIndent(post, "", "  ")
-	fmt.Printf("post: %s\n", result)
+	fmt.Printf("Post: %s\n", result)
 
 	desc, ok := post.Desc()
 	if !ok {
 		return fmt.Errorf("post's description is null")
 	}
 
-	fmt.Printf("The posts's description is: %s\n", desc)
-
+	fmt.Printf("The post's description is: %s\n", desc)
 	return nil
 }
