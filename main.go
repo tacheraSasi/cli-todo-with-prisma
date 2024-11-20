@@ -7,8 +7,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
-
 	// "github.com/tacheraSasi/prisma-go-demo.git/db"
 )
 
@@ -18,9 +18,12 @@ import (
 //updateTodo
 //deleteTodo
 
+var IsPrismaConnected bool = false
+
 
 func main() {
 	client := db.NewClient()
+
 	defer PrismaDisconnect(client)
 
 	switch os.Args[1] {
@@ -56,11 +59,16 @@ func main() {
 
 func PrismaConnect(client *db.PrismaClient){
 	if err := client.Prisma.Connect(); err != nil{
+		IsPrismaConnected = true
 		panic(err)
 	}
 }
 
 func PrismaDisconnect(client *db.PrismaClient){
+	if !IsPrismaConnected { // making Sure that prisma is connected
+		log.Fatal("Prisma is not connected. Location:main.go/PrismaDisconnect")
+		return
+	}
 	if err := client.Prisma.Disconnect();err!=nil{ 
 		panic(err)
 	}
