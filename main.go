@@ -56,7 +56,8 @@ func main() {
 			fmt.Println("Todo not found")
 			return
 		}
-		fmt.Println(todo)
+		fmt.Println("Todo Found")
+		fmt.Println(todo.ID,todo.Title)
 
 	default:
 		fmt.Println("Invalid options\n--	all (for getting all todos)\n--		add <Todo-title> (for adding a todo)")
