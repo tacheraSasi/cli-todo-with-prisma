@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-
+	"strconv"
 )
 
 type Todo *db.InnerTodo //NOTICE:Will fix this Later
@@ -41,5 +41,21 @@ func UpdateTodo(){}
 
 func DeleteTodo(){}
 
-func GetTodo(){}
+func GetTodo(client *db.PrismaClient,id string)*db.TodoModel{
+	PrismaConnect(client)
+	ctx := context.Background()
+
+	numericalID,conversionError := strconv.Atoi(id)
+	if conversionError != nil{
+		log.Printf("Error fetching Todo: %v\n", conversionError)
+        return nil
+	}
+
+	todo, err := client.Todo.FindUnique(db.Todo.ID.Equals(numericalID)).Exec(ctx)
+    if err != nil {
+        log.Printf("Error fetching Todo: %v\n", err)
+        return nil
+    }
+	return todo
+}
 
