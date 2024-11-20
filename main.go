@@ -26,8 +26,10 @@ func main() {
 	switch os.Args[1] {
 	case "all":
 		todos := GetAll(client)
-		for i,todo := range todos {
-			fmt.Println(i+1,". ",todo.Title)
+		fmt.Println("ID   Title")
+		fmt.Println("__________\n")
+		for _,todo := range todos {
+			fmt.Println(todo.ID,". ",todo.Title)
 		}
 	case "add":
 		if len(os.Args) < 3 {
