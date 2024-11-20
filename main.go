@@ -27,7 +27,7 @@ func main() {
 	case "all":
 		todos := GetAll(client)
 		fmt.Println("ID   Title")
-		fmt.Println("__________\n")
+		fmt.Println("-----------")
 		for _,todo := range todos {
 			fmt.Println(todo.ID,". ",todo.Title)
 		}
