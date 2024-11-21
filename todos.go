@@ -76,6 +76,11 @@ func DeleteTodo(client *db.PrismaClient, id string) error {
 		log.Printf("Invalid ID provided: %v\n", err)
 		return err
 	}
+	_,todoFetchErr := GetTodo(client,id)
+	if todoFetchErr != nil{
+		fmt.Println("Todo does not exist")
+		return todoFetchErr
+	}
 	_, deleteErr := client.Todo.FindUnique(
 		db.Todo.ID.Equals(numericalID),
 	).Delete().Exec(ctx)

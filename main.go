@@ -76,6 +76,21 @@ func main() {
 
 		fmt.Println("Todo Found:")
 		fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
+	case "delete":
+		if len(os.Args) < 3 {
+			fmt.Println("Missing the todo ID argument")
+			return
+		}
+
+		id := os.Args[2]
+		delErr := DeleteTodo(client,id)
+		if delErr != nil {
+			log.Printf("Error deleting todo: %v\n", delErr)
+			return
+		}
+		fmt.Printf("Task with id %s Was deleted\n",id)
+		return
+
 	default:
 		fmt.Println("Invalid command.")
 		printUsage()
