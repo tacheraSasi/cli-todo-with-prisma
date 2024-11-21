@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"cli-todo/db"
 	"context"
 	"encoding/json"
@@ -38,12 +39,18 @@ func main() {
 			fmt.Printf("%d   %s\n", todo.ID, todo.Title)
 		}
 	case "add":
-		if len(os.Args) < 3 {
-			fmt.Println("Missing the todo title argument")
-			return
+		// if len(os.Args) < 3 {
+		// 	fmt.Println("Missing the todo title argument")
+		// 	return
+		// }
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter the title: ")
+		title,readerErr := reader.ReadString('\n')
+		if readerErr != nil{
+			fmt.Println("Something went wrong",readerErr)
 		}
 
-		title := os.Args[2]
+		// title := os.Args[2]
 		_, err := AddTodo(client, title)
 		if err != nil {
 			log.Printf("Error adding todo: %v\n", err)
