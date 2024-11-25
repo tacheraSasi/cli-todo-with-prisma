@@ -112,6 +112,15 @@ func cmdAll(client *db.PrismaClient){
 	}
 	printTodosTable(todos)
 }
+func cmdDel(client *db.PrismaClient){
+	
+}
+func cmdUpdate(client *db.PrismaClient){
+	
+}
+func cmdAdd(client *db.PrismaClient){
+	
+}
 func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  all           Get all todos")
