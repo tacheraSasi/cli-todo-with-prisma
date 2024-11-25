@@ -5,11 +5,11 @@ package main
 import (
 	"bufio"
 	"cli-todo/db"
-	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 var IsPrismaConnected bool = false
@@ -148,40 +148,22 @@ func PrismaDisconnect(client *db.PrismaClient) {
 	IsPrismaConnected = false
 }
 
-// Run demonstrates CRUD operations (example function)
-func Run(client *db.PrismaClient) error {
-	PrismaConnect(client)
-	ctx := context.Background()
+func printTodosTable(todos []db.TodoModel) {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetStyle(table.StyleLight)
+	t.SetTitle("Todos")
+	t.AppendHeader(table.Row{"ID", "Title"})
 
-	// Create a post
-	createdPost, err := client.Post.CreateOne(
-		db.Post.Title.Set("Hi from Prisma!"),
-		db.Post.Published.Set(true),
-		db.Post.Desc.Set("Prisma is a database toolkit and makes databases easy."),
-	).Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("error creating post: %w", err)
+	for _, todo := range todos {
+		t.AppendRow(table.Row{todo.ID, todo.Title})
 	}
 
-	result, _ := json.MarshalIndent(createdPost, "", "  ")
-	fmt.Printf("Created post: %s\n", result)
+	// Apply dark style
+	style := t.Style()
+	style.Color.Header = text.Colors{text.BgHiBlack, text.FgWhite}
+	style.Color.Row = text.Colors{text.BgBlack, text.FgHiWhite}
+	t.SetStyle(style)
 
-	// Find a single post
-	post, err := client.Post.FindUnique(
-		db.Post.ID.Equals(createdPost.ID),
-	).Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("error finding post: %w", err)
-	}
-
-	result, _ = json.MarshalIndent(post, "", "  ")
-	fmt.Printf("Post: %s\n", result)
-
-	desc, ok := post.Desc()
-	if !ok {
-		return fmt.Errorf("post's description is null")
-	}
-
-	fmt.Printf("The post's description is: %s\n", desc)
-	return nil
+	t.Render()
 }
