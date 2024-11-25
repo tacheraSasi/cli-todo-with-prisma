@@ -107,6 +107,7 @@ func cmdGetTodo(client *db.PrismaClient){
 	// fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
 	printSingleTodo(todo)
 }
+
 func cmdAdd(client *db.PrismaClient){
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter the title: ")
