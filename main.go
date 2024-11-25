@@ -84,20 +84,7 @@ func main() {
 			return
 		}
 	case "delete":
-		if len(os.Args) < 3 {
-			fmt.Println("Missing the todo ID argument")
-			return
-		}
-
-		id := os.Args[2]
-		delErr := DeleteTodo(client,id)
-		if delErr != nil {
-			log.Printf("Error deleting todo: %v\n", delErr)
-			return
-		}
-		fmt.Printf("Task with id %s Was deleted\n",id)
-		return
-
+		cmdDel(client)
 	default:
 		fmt.Println("Invalid command.")
 		printUsage()
@@ -112,15 +99,31 @@ func cmdAll(client *db.PrismaClient){
 	}
 	printTodosTable(todos)
 }
+
 func cmdDel(client *db.PrismaClient){
-	
+	if len(os.Args) < 3 {
+		fmt.Println("Missing the todo ID argument")
+		return
+	}
+
+	id := os.Args[2]
+	delErr := DeleteTodo(client,id)
+	if delErr != nil {
+		log.Printf("Error deleting todo: %v\n", delErr)
+		return
+	}
+	fmt.Printf("Task with id %s Was deleted\n",id)
+	return
 }
+
 func cmdUpdate(client *db.PrismaClient){
-	
+
 }
+
 func cmdAdd(client *db.PrismaClient){
-	
+
 }
+
 func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  all           Get all todos")
