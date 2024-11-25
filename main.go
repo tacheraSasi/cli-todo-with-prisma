@@ -103,8 +103,9 @@ func cmdGetTodo(client *db.PrismaClient){
 		return
 	}
 
-	fmt.Println("Todo Found:")
-	fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
+	// fmt.Println("Todo Found:")
+	// fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
+	printSingleTodo(todo)
 }
 func cmdAdd(client *db.PrismaClient){
 	reader := bufio.NewReader(os.Stdin)
@@ -181,7 +182,7 @@ func printSingleTodo(todo *db.TodoModel){
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.SetStyle(table.StyleLight)
-	t.SetTitle("Todos")
+	t.SetTitle("Todo Found")
 	t.AppendHeader(table.Row{"ID", "Title", "UUID"})
 
 	t.AppendRow(table.Row{todo.ID, todo.Title, todo.UID})
