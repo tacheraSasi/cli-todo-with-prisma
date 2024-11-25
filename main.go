@@ -29,43 +29,9 @@ func main() {
 	case "all":
 		cmdAll(client)
 	case "add":
-		// if len(os.Args) < 3 {
-		// 	fmt.Println("Missing the todo title argument")
-		// 	return
-		// }
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter the title: ")
-		title,readerErr := reader.ReadString('\n')
-		if readerErr != nil{
-			fmt.Println("Something went wrong",readerErr)
-		}
-
-		// title := os.Args[2]
-		_, err := AddTodo(client, title)
-		if err != nil {
-			log.Printf("Error adding todo: %v\n", err)
-			return
-		}
-		fmt.Println("Todo added successfully!")
+		cmdAdd(client)
 	case "get-todo":
-		if len(os.Args) < 3 {
-			fmt.Println("Missing the todo ID argument")
-			return
-		}
-
-		id := os.Args[2]
-		todo, err := GetTodo(client, id)
-		if err != nil {
-			log.Printf("Error fetching todo: %v\n", err)
-			return
-		}
-		if todo == nil {
-			fmt.Println("Todo not found")
-			return
-		}
-
-		fmt.Println("Todo Found:")
-		fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
+		cmdGetTodo(client)
 	case "update":
 		cmdUpdate(client)
 	case "delete":
@@ -120,8 +86,41 @@ func cmdUpdate(client *db.PrismaClient){
 	}
 }
 
-func cmdAdd(client *db.PrismaClient){
+func cmdGetTodo(client *db.PrismaClient){
+	if len(os.Args) < 3 {
+		fmt.Println("Missing the todo ID argument")
+		return
+	}
 
+	id := os.Args[2]
+	todo, err := GetTodo(client, id)
+	if err != nil {
+		log.Printf("Error fetching todo: %v\n", err)
+		return
+	}
+	if todo == nil {
+		fmt.Println("Todo not found")
+		return
+	}
+
+	fmt.Println("Todo Found:")
+	fmt.Printf("ID: %d\nTitle: %s\n", todo.ID, todo.Title)
+}
+func cmdAdd(client *db.PrismaClient){
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter the title: ")
+	title,readerErr := reader.ReadString('\n')
+	if readerErr != nil{
+		fmt.Println("Something went wrong",readerErr)
+	}
+
+	// title := os.Args[2]
+	_, err := AddTodo(client, title)
+	if err != nil {
+		log.Printf("Error adding todo: %v\n", err)
+		return
+	}
+	fmt.Println("Todo added successfully!")
 }
 
 func printUsage() {
@@ -168,6 +167,25 @@ func printTodosTable(todos []db.TodoModel) {
 	for _, todo := range todos {
 		t.AppendRow(table.Row{todo.ID, todo.Title, todo.UID})
 	}
+
+	// Applying dark style
+	style := t.Style()
+	style.Color.Header = text.Colors{text.BgHiBlack, text.FgWhite}
+	style.Color.Row = text.Colors{text.BgBlack, text.FgHiWhite}
+	t.SetStyle(*style)
+
+	t.Render()
+}
+
+func printSingleTodo(todo *db.TodoModel){
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetStyle(table.StyleLight)
+	t.SetTitle("Todos")
+	t.AppendHeader(table.Row{"ID", "Title", "UUID"})
+
+	t.AppendRow(table.Row{todo.ID, todo.Title, todo.UID})
+	
 
 	// Applying dark style
 	style := t.Style()
