@@ -27,14 +27,7 @@ func main() {
 	command := os.Args[1]
 	switch command {
 	case "all":
-		todos, err := GetAll(client)
-		if err != nil {
-			log.Printf("Error fetching todos: %v\n", err)
-			return
-		}
-		printTodosTable(todos)
-		
-		// }
+		cmdAll(client)
 	case "add":
 		// if len(os.Args) < 3 {
 		// 	fmt.Println("Missing the todo title argument")
@@ -111,6 +104,14 @@ func main() {
 	}
 }
 
+func cmdAll(client *db.PrismaClient){
+	todos, err := GetAll(client)
+	if err != nil {
+		log.Printf("Error fetching todos: %v\n", err)
+		return
+	}
+	printTodosTable(todos)
+}
 func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  all           Get all todos")
