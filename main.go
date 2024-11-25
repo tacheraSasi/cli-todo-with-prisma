@@ -32,12 +32,9 @@ func main() {
 			log.Printf("Error fetching todos: %v\n", err)
 			return
 		}
-
-		fmt.Println("ID   Title")
-		fmt.Println("-----------")
-		for _, todo := range todos {
-			fmt.Printf("%d   %s\n", todo.ID, todo.Title)
-		}
+		printTodosTable(todos)
+		
+		// }
 	case "add":
 		// if len(os.Args) < 3 {
 		// 	fmt.Println("Missing the todo title argument")
@@ -153,17 +150,17 @@ func printTodosTable(todos []db.TodoModel) {
 	t.SetOutputMirror(os.Stdout)
 	t.SetStyle(table.StyleLight)
 	t.SetTitle("Todos")
-	t.AppendHeader(table.Row{"ID", "Title"})
+	t.AppendHeader(table.Row{"ID", "Title", "UUID"})
 
 	for _, todo := range todos {
-		t.AppendRow(table.Row{todo.ID, todo.Title})
+		t.AppendRow(table.Row{todo.ID, todo.Title, todo.UID})
 	}
 
-	// Apply dark style
+	// Applying dark style
 	style := t.Style()
 	style.Color.Header = text.Colors{text.BgHiBlack, text.FgWhite}
 	style.Color.Row = text.Colors{text.BgBlack, text.FgHiWhite}
-	t.SetStyle(style)
+	t.SetStyle(*style)
 
 	t.Render()
 }
